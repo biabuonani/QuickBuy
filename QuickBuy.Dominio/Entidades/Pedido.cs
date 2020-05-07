@@ -1,11 +1,12 @@
 ﻿using QuickBuy.Dominio.ObjetoDeValor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace QuickBuy.Dominio.Entidades
 {
-    class Pedido
+    public class Pedido : Entidade 
     {
 
         public int Id { get; set; }
@@ -31,6 +32,17 @@ namespace QuickBuy.Dominio.Entidades
         public int FormaPagamentoId { get; set; }
 
         public FormaPagamento FormaPagamento  { get; set; }
-}
+
+
+       public override void Validate()
+        {
+            LimparMensagensValidacao();
+            if (!ItensPedidos.Any())
+                AdicionarCritica("Itens do pedido não localizados");
+
+            if (string.IsNullOrEmpty(CEP))
+                AdicionarCritica("CEP não preenchido");
+        }
+    }
 
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace QuickBuy.Dominio.Entidades
 {
-    class Produto
+    public class Produto : Entidade
     {
         public int Id { get; set; }
 
@@ -12,6 +12,11 @@ namespace QuickBuy.Dominio.Entidades
 
         public decimal Preco { get; set; }
 
+
+        public override void Validate()
+        {
+
+        }
 
     }
 }
