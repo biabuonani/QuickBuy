@@ -1,18 +1,24 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using QuickBuy.Repositorio.Contexto;
 
-namespace QuickBuy.web
+
+namespace QuickBuy.Web
 {
     public class Startup
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder();
+            builder.AddJsonFile("config.json", optional: false, reloadOnChange: true);
+
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -21,6 +27,11 @@ namespace QuickBuy.web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            var connectionString = Configuration.GetConnectionString("QuickBuyDB");
+            services.AddDbContext<QuickBuyContexto>(option =>
+                                                        option.UseMySql(connectionString,
+                                                                            m => m.MigrationsAssembly("QuickBuy.Repositorio")));
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -56,20 +67,16 @@ namespace QuickBuy.web
 
             app.UseSpa(spa =>
             {
-            // To learn more about options for serving an Angular SPA from ASP.NET Core,
-            // see https://go.microsoft.com/fwlink/?linkid=864501
+                // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                // see https://go.microsoft.com/fwlink/?linkid=864501
 
-            spa.Options.SourcePath = "ClientApp";
+                spa.Options.SourcePath = "ClientApp";
 
-            if (env.IsDevelopment())
-            {
-                    //essa linha torna o processo mais fácil, permite testar a aplicação sem usar o VS
+                if (env.IsDevelopment())
+                {
                     spa.UseAngularCliServer(npmScript: "start");
-
-                    //spa.UseProxyToSpaDevelopmentServer("http:\\localhost:4200/");
-                        
                 }
-    });
+            });
         }
     }
 }

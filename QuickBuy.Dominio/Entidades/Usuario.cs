@@ -21,7 +21,12 @@ namespace QuickBuy.Dominio.Entidades
 
         public override void Validate()
         {
+            LimparMensagensValidacao();
+            if (string.IsNullOrEmpty(Email))
+                AdicionarCritica("E-mail não preenchido");
 
+            if (string.IsNullOrEmpty(Senha))
+                AdicionarCritica("Senha não preenchido ");
         }
 
 
